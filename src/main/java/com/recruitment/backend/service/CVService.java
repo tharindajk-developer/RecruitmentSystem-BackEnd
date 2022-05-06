@@ -27,6 +27,7 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.recruitment.backend.entity.CV;
 import com.recruitment.backend.entity.User;
+import com.recruitment.backend.enums.RolesEnum;
 import com.recruitment.backend.repository.CVRepository;
 import com.recruitment.backend.repository.UserRepository;
 
@@ -56,7 +57,7 @@ public class CVService {
 		}
 
 		if (user != null && user.getRole() != null
-				&& user.getRole().getName().equalsIgnoreCase("JOBSEEKER")) {
+				&& user.getRole().getName().equalsIgnoreCase(RolesEnum.JOBSEEKER.toString())) {
 			user.setCv(cv);
 			cvRepository.save(cv);
 			status = "Successfully stored the CV";
@@ -103,7 +104,7 @@ public class CVService {
 		User user = userRepository.findById(userId).get();
 
 		if (user.getRole() != null
-				&& user.getRole().getName().equalsIgnoreCase("JOBSEEKER")) {
+				&& user.getRole().getName().equalsIgnoreCase(RolesEnum.JOBSEEKER.toString())) {
 			log.info("Preparing CV report for " + userId);
 		}
 		OutputStream fos = new FileOutputStream(new File(outputhFilePath));
@@ -112,7 +113,7 @@ public class CVService {
 		PdfStamper pdfStamper = new PdfStamper(pdfReader, fos);
 
 		if (user.getRole() != null
-				&& user.getRole().getName().equalsIgnoreCase("JOBSEEKER")) {
+				&& user.getRole().getName().equalsIgnoreCase(RolesEnum.JOBSEEKER.toString())) {
 			for (int i = 1; i <= pdfReader.getNumberOfPages(); i++) {
 				if (i == 1) {
 					PdfContentByte pdfContentByte = pdfStamper

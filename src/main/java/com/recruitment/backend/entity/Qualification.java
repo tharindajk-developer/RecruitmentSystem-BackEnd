@@ -27,6 +27,7 @@ public class Qualification {
 	private String qualificationName;
 	private Date qualificationDate;
 	private Date expiryDate;
+	private Integer qualificationLevel;
 
 	@ManyToOne
 	@JoinColumn(name = "cv_id", nullable = false)
@@ -78,6 +79,14 @@ public class Qualification {
 
 	public void setCv(CV cv) {
 		this.cv = cv;
+	}
+
+	public Integer getQualificationLevel() {
+		return qualificationLevel;
+	}
+
+	public void setQualificationLevel(Integer qualificationLevel) {
+		this.qualificationLevel = qualificationLevel;
 	}
 
 }

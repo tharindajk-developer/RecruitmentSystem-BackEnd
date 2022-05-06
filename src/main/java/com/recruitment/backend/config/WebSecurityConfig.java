@@ -42,7 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			"/configuration/ui", "/configuration/security", "/swagger-ui.html",
 			"/webjars/**",
 			// -- Swagger UI v3 (OpenAPI)
-			"/v3/api-docs/**", "/swagger-ui/**"
+			"/v3/api-docs/**", "/swagger-ui/**", "/user/**"
 	};
 
 	@Autowired
@@ -76,6 +76,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_WHITELIST)
 				.permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/**")
+				.permitAll()
+				.antMatchers("/user/create", "/**")
 				.permitAll()
 				.
 				// all other requests need to be authenticated

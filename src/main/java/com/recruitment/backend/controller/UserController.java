@@ -3,6 +3,8 @@
  */
 package com.recruitment.backend.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
@@ -190,6 +192,14 @@ public class UserController {
 
 		log.info("Get: /user/search/username");
 		return userService.findByUserName(requestModel.getName());
+	}
+	
+	@GetMapping("/getbyqualificationlevel/{level}")
+	public List<User> getUserByQualificationLevel(HttpServletRequest request,
+			@RequestParam(value = "level", required = false) Integer level) {
+
+		log.info("Get: /user/getbyqualificationlevel");
+		return userService.findByQualificationLevel(level);
 	}
 
 }

@@ -3,6 +3,8 @@
  */
 package com.recruitment.backend.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -23,4 +25,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 	Page<User> findByUserName(String name, Pageable pageable);
 
 	User findByRole_Name(String name);
+	
+	List<User> findByCv_Qualifications_QualificationLevel(Integer level);
 }

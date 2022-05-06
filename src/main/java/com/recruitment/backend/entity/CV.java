@@ -28,7 +28,6 @@ public class CV {
 	private Long id;
 	private String jobSector;
 	private String contactNo;
-	private String educationalLevel;
 	private Date creationDate;
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "address_id", referencedColumnName = "id")
@@ -39,9 +38,11 @@ public class CV {
 	private List<Qualification> qualifications;
 	@OneToMany(mappedBy = "cv")
 	private List<Experience> experiences;
+	private Integer noOfGCSEpasses;
 
-	/*@OneToOne(mappedBy = "cv")
-	private User user;*/
+	/*
+	 * @OneToOne(mappedBy = "cv") private User user;
+	 */
 
 	public Long getId() {
 		return id;
@@ -65,14 +66,6 @@ public class CV {
 
 	public void setContactNo(String contactNo) {
 		this.contactNo = contactNo;
-	}
-
-	public String getEducationalLevel() {
-		return educationalLevel;
-	}
-
-	public void setEducationalLevel(String educationalLevel) {
-		this.educationalLevel = educationalLevel;
 	}
 
 	public Date getCreationDate() {
@@ -115,12 +108,18 @@ public class CV {
 		this.experiences = experiences;
 	}
 
-	/*public User getUser() {
-		return user;
+	public Integer getNoOfGCSEpasses() {
+		return noOfGCSEpasses;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
-	}*/
+	public void setNoOfGCSEpasses(Integer noOfGCSEpasses) {
+		this.noOfGCSEpasses = noOfGCSEpasses;
+	}
+
+	/*
+	 * public User getUser() { return user; }
+	 * 
+	 * public void setUser(User user) { this.user = user; }
+	 */
 
 }
