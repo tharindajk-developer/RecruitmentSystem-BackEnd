@@ -27,4 +27,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 	User findByRole_Name(String name);
 	
 	List<User> findByCv_Qualifications_QualificationLevel(Integer level);
+	
+	User findByCv_Id(Long cvId);
 }

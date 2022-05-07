@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +28,15 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.recruitment.backend.entity.CV;
+import com.recruitment.backend.entity.Experience;
+import com.recruitment.backend.entity.Qualification;
+import com.recruitment.backend.entity.Skill;
 import com.recruitment.backend.entity.User;
 import com.recruitment.backend.enums.RolesEnum;
 import com.recruitment.backend.repository.CVRepository;
+import com.recruitment.backend.repository.ExperienceRepository;
+import com.recruitment.backend.repository.QualificationsRepository;
+import com.recruitment.backend.repository.SkillRepository;
 import com.recruitment.backend.repository.UserRepository;
 
 /*
@@ -47,6 +55,18 @@ public class CVService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private ExperienceRepository experienceRepository;
+	
+	@Autowired
+	private SkillRepository skillRepository;
+	
+	@Autowired
+	private QualificationsRepository qualificationsRepository;
+	
+	@Autowired
+	private UserService userService;
 
 	public String addUpdateCV(CV cv, Long userId) {
 
@@ -59,8 +79,35 @@ public class CVService {
 		if (user != null && user.getRole() != null
 				&& user.getRole().getName().equalsIgnoreCase(RolesEnum.JOBSEEKER.toString())) {
 			user.setCv(cv);
+			
 			cvRepository.save(cv);
-			status = "Successfully stored the CV";
+			
+			Set<Experience> experiences = new HashSet<>();			
+			for(Experience e : cv.getExperiences()){
+				e.setCv(cv);
+				experiences.add(e);
+			}		
+			experienceRepository.saveAll(experiences);
+			//cv.setExperiences(experiences);
+			
+			Set<Skill> skills = new HashSet<>();			
+			for(Skill s : cv.getSkills()){
+				s.setCv(cv);
+				skills.add(s);
+			}
+			skillRepository.saveAll(skills);
+			//cv.setSkills(skills);
+			
+			Set<Qualification> qualifications = new HashSet<>();			
+			for(Qualification q : cv.getQualifications()){
+				q.setCv(cv);
+				qualifications.add(q);
+			}			
+			//cv.setQualifications(qualifications);
+			qualificationsRepository.saveAll(qualifications);
+			
+	
+			status = "Successfully stored the CV ";
 		}
 		return status;
 
@@ -70,7 +117,9 @@ public class CVService {
 
 		log.debug("Fetching CV for user:" + userId);
 		if (userRepository.findById(userId).isPresent()) {
-			return userRepository.findById(userId).get().getCv();
+			
+			User u = userRepository.findById(userId).get();
+			return userService.findByUserName(u.getUserName()).getCv();
 		} else {
 			return null;
 		}
@@ -85,15 +134,8 @@ public class CVService {
 			user = userRepository.findById(userId).get();
 
 			if (user.getCv() != null && user.getCv().getId() != null) {
-				Long cvId = user.getCv().getId();
 				user.setCv(null);
 				userRepository.save(user);
-
-				if (cvId > 0) {
-					if (cvRepository.existsById(cvId)) {
-						cvRepository.deleteById(cvId);
-					}
-				}
 			}
 		}
 	}

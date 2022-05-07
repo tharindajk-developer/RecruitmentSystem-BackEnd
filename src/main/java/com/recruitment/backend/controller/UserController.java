@@ -51,7 +51,7 @@ public class UserController {
 
 		try {
 			User u = userService.findByUserName(user.getUserName());
-			if (u != null && user.getId() == null) {
+			if (u != null && user.getId() != null) {
 				ResponseModel responseModel = new ResponseModel(
 						"An error occured while creating the user. User name cannot be duplicated.",
 						"500");
@@ -77,7 +77,7 @@ public class UserController {
 		}
 	}
 
-	@PostMapping("/search/{page}")
+	@GetMapping("/search/{page}")
 	public Page<User> searchUsers(
 			HttpServletRequestWrapper httpServletRequestWrapper,
 			@PathVariable(value = "page") int page) {
@@ -151,12 +151,12 @@ public class UserController {
 		}
 	}
 
-	@DeleteMapping("/inactive")
+	@PostMapping("/inactive")
 	public ResponseEntity<ResponseModel> inactivateUser(
 			HttpServletRequest httpServletRequestWrapper,
 			@RequestParam(value = "id", required = false) Long id) {
 
-		log.debug("Delete: /user/inactive");
+		log.debug("Post: /user/inactive");
 		try {
 			log.debug("Inactivating account.." + id);
 			userService.inactivateUser(id);
@@ -196,7 +196,7 @@ public class UserController {
 	
 	@GetMapping("/getbyqualificationlevel/{level}")
 	public List<User> getUserByQualificationLevel(HttpServletRequest request,
-			@RequestParam(value = "level", required = false) Integer level) {
+			@PathVariable(value = "level") Integer level) {
 
 		log.info("Get: /user/getbyqualificationlevel");
 		return userService.findByQualificationLevel(level);

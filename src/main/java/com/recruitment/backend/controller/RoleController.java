@@ -66,7 +66,7 @@ public class RoleController {
 		}
 	}
 
-	@PostMapping("/search/{page}")
+	@GetMapping("/search/{page}")
 	public Page<Role> searchRoles(
 			HttpServletRequestWrapper httpServletRequestWrapper,
 			@PathVariable(value = "page") int page) {

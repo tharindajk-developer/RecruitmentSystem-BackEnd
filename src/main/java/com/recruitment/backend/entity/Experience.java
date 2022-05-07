@@ -6,6 +6,7 @@ package com.recruitment.backend.entity;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,7 +30,7 @@ public class Experience {
 	private Date startDate;
 	private Date endDate;
 
-	@ManyToOne
+	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "cv_id", nullable = false)
 	private CV cv;
 

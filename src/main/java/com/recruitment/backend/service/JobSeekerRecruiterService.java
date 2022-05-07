@@ -3,6 +3,7 @@
  */
 package com.recruitment.backend.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,6 +64,8 @@ public class JobSeekerRecruiterService {
 			jobSeeker.setHiredBy(recruiterId);
 			jobSeeker.setHired(true);
 			jobSeeker.setHiredDate(new Date());
+			
+			userService.addUpdateUser(jobSeeker);
 
 			status = "Successfully inserted hiring record.";
 		}
@@ -95,17 +98,26 @@ public class JobSeekerRecruiterService {
 		log.debug("Fetching all applied jobs.");
 
 		Iterable<AppliedJobs> appliedJobs = appliedJobRepository.findAll();
+		List<AppliedJobs> appliedJobsList = new ArrayList<>();
+		for(AppliedJobs appJobs : appliedJobs){
+			appJobs.setUser(userService.findByUserName(appJobs.getUser().getUserName()));
+			appliedJobsList.add(appJobs);
+		}
 
-		return StreamSupport.stream(appliedJobs.spliterator(), false).collect(
-				Collectors.toList());
+		return appliedJobsList;
 	}
 
 	public List<AppliedJobs> getAllAppliedJobsByUser(Long userId) {
 
 		log.debug("Fetching applied jobs by user " + userId);
-
 		User user = userService.getUserById(userId);
+		List<AppliedJobs> appliedJobs = appliedJobRepository.findAllByUser(user);
+		List<AppliedJobs> appliedJobsList = new ArrayList<>();
+		for(AppliedJobs appJobs : appliedJobs){
+			appJobs.setUser(userService.findByUserName(appJobs.getUser().getUserName()));
+			appliedJobsList.add(appJobs);
+		}
 
-		return appliedJobRepository.findAllByUser(user);
+		return appliedJobsList;
 	}
 }

@@ -3,19 +3,31 @@
  */
 package com.recruitment.backend.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.recruitment.backend.entity.CV;
+import com.recruitment.backend.entity.Experience;
+import com.recruitment.backend.entity.Qualification;
+import com.recruitment.backend.entity.Skill;
 import com.recruitment.backend.entity.User;
 import com.recruitment.backend.model.ChangePassword;
+import com.recruitment.backend.repository.ExperienceRepository;
+import com.recruitment.backend.repository.QualificationsRepository;
+import com.recruitment.backend.repository.SkillRepository;
 import com.recruitment.backend.repository.UserRepository;
 import com.recruitment.backend.util.RequestModel;
 
@@ -36,18 +48,27 @@ public class UserService {
 	@Autowired
 	private RoleService roleService;
 
+	@Autowired
+	private SkillRepository skillRepository;
+
+	@Autowired
+	private QualificationsRepository qualificationsRepository;
+
+	@Autowired
+	private ExperienceRepository experienceRepository;
+
 	public User addUpdateUser(User user) {
 
-		String password = null;
 		user.setUserName(user.getUserName().trim());
-		if (!StringUtils.isEmpty(user.getId())) {
-			password = userRepository.findById(user.getId()).get()
-					.getPassword();
-			user.setPassword(password);
+		if (user.getId() > 0) {
+			User u = userRepository.findById(user.getId()).get();
+			user.setPassword(u.getPassword());
+			user.setCv(u.getCv());
 		}
 
-		if (StringUtils.isEmpty(user.getId())) {
+		if (user.getId() == 0) {
 			user.setPassword(hashPassword(user.getPassword()));
+			user.setCv(null);
 		}
 
 		if (!StringUtils.isEmpty(user.getRole().getName())) {
@@ -61,7 +82,14 @@ public class UserService {
 	public Page<User> getAllUsers(int page) {
 
 		log.debug("Fetching Users.");
-		return userRepository.findAll(PageRequest.of(page, 12));
+		Page<User> users = userRepository.findAll(PageRequest.of(page, 12));
+		List<User> userList = new ArrayList<>();
+		for (User u : users) {
+			User user = findByUserName(u.getUserName());
+			userList.add(user);
+		}
+
+		return new PageImpl<User>(userList);
 	}
 
 	public User getUserById(Long id) {
@@ -77,6 +105,9 @@ public class UserService {
 	public void deleteUser(Long id) {
 
 		log.debug("Deleting User : " + id);
+		User user = userRepository.findById(id).get();
+		user.setRole(null);
+		userRepository.save(user);
 		userRepository.deleteById(id);
 	}
 
@@ -85,7 +116,63 @@ public class UserService {
 	}
 
 	public User findByUserName(String userName) {
-		return userRepository.findByUserName(userName);
+
+		User user = userRepository.findByUserName(userName);
+		CV cv = new CV();
+
+		if (user != null && user.getCv() != null) {
+			cv.setContactNo(user.getCv().getContactNo());
+			cv.setCreationDate(user.getCv().getCreationDate());
+			cv.setId(user.getCv().getId());
+			cv.setJobSector(user.getCv().getJobSector());
+			cv.setNoOfGCSEpasses(user.getCv().getNoOfGCSEpasses());
+			cv.setAddress(user.getCv().getAddress());
+
+			List<Skill> skillList = skillRepository.findAllByCv_Id(cv.getId());
+			Set<Skill> skills = new HashSet<>();
+			for (Skill s : skillList) {
+				Skill skill = new Skill();
+				skill.setId(s.getId());
+				skill.setSkillName(s.getSkillName());
+				skill.setSkillType(s.getSkillType());
+				skills.add(skill);
+			}
+			cv.setSkills(skills);
+
+			List<Qualification> qualificationList = qualificationsRepository
+					.findAllByCv_Id(cv.getId());
+			Set<Qualification> qualifications = new HashSet<>();
+			for (Qualification q : qualificationList) {
+				Qualification qualification = new Qualification();
+				qualification.setId(q.getId());
+				qualification.setExpiryDate(q.getExpiryDate());
+				qualification.setQualificationDate(q.getQualificationDate());
+				qualification.setQualificationLevel(q.getQualificationLevel());
+				qualification.setQualificationName(q.getQualificationName());
+				qualification.setQualificationType(q.getQualificationType());
+				qualifications.add(qualification);
+			}
+			cv.setQualifications(qualifications);
+
+			List<Experience> experienceList = experienceRepository
+					.findAllByCv_Id(cv.getId());
+			Set<Experience> experiences = new HashSet<>();
+			for (Experience e : experienceList) {
+				Experience experience = new Experience();
+				experience.setId(e.getId());
+				experience.setCompanyName(e.getCompanyName());
+				experience.setEndDate(e.getEndDate());
+				experience.setExperienceType(e.getExperienceType());
+				experience.setRole(e.getRole());
+				experience.setStartDate(e.getStartDate());
+				experiences.add(experience);
+			}
+			cv.setExperiences(experiences);
+
+			user.setCv(cv);
+		}
+
+		return user;
 	}
 
 	public boolean checkExistingPassword(ChangePassword changePassword) {
@@ -125,12 +212,21 @@ public class UserService {
 
 		log.debug("Fetching Users.");
 
+		Page<User> users = null;
 		if (req != null && !StringUtils.isEmpty(req.getName())) {
-			return userRepository.findByUserName(req.getName(),
+			users = userRepository.findByUserName(req.getName(),
 					PageRequest.of(page, 12));
 		} else {
-			return userRepository.findAll(PageRequest.of(page, 12));
+			users = userRepository.findAll(PageRequest.of(page, 12));
 		}
+
+		List<User> userList = new ArrayList<>();
+		for (User u : users) {
+			User user = findByUserName(u.getUserName());
+			userList.add(user);
+		}
+
+		return new PageImpl<User>(userList);
 	}
 
 	public User findByAccountNumber(String role) {
@@ -149,8 +245,25 @@ public class UserService {
 
 		return userRepository.findAll();
 	}
-	
+
 	public List<User> findByQualificationLevel(Integer level) {
-		return userRepository.findByCv_Qualifications_QualificationLevel(level);
+
+		List<Qualification> qualifications = qualificationsRepository
+				.findAllByQualificationLevel(level);
+		Set<Long> cvIds = new HashSet<>();
+		Set<User> users = new HashSet<>();
+
+		for (Qualification q : qualifications) {
+			cvIds.add(q.getCv().getId());
+
+			User u = userRepository.findByCv_Id(q.getCv().getId());
+
+			if (u != null) {
+				User user = findByUserName(u.getUserName());
+				users.add(user);
+			}
+		}
+
+		return users.stream().collect(Collectors.toList());
 	}
 }

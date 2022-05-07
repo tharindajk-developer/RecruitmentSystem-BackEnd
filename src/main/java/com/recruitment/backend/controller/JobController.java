@@ -66,12 +66,12 @@ public class JobController {
 		}
 	}
 
-	@PostMapping("/search/{page}")
+	@GetMapping("/search/{page}")
 	public Page<Job> searchJobs(
 			HttpServletRequestWrapper httpServletRequestWrapper,
 			@PathVariable(value = "page") int page) {
 
-		log.info("Post: /branch/search");
+		log.info("Post: /job/search");
 		return jobService.getAllJobs(page);
 	}
 
@@ -86,14 +86,14 @@ public class JobController {
 			jobService.deleteJob(id);
 			log.debug("Job deleted succesfully " + id);
 			ResponseModel responseModel = new ResponseModel(
-					"Succesfully deleted the branch", "200");
+					"Succesfully deleted the job", "200");
 			return new ResponseEntity<ResponseModel>(responseModel,
 					HttpStatus.OK);
 		} catch (Exception e) {
-			log.error("An error occured while deleting the branch. Please try again."
+			log.error("An error occured while deleting the job. Please try again."
 					+ id);
 			ResponseModel responseModel = new ResponseModel(
-					"An error occured while deleting the branch. Please try again.",
+					"An error occured while deleting the job. Please try again.",
 					"500");
 			return new ResponseEntity<ResponseModel>(responseModel,
 					HttpStatus.INTERNAL_SERVER_ERROR);

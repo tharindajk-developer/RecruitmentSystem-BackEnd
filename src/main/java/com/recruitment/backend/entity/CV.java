@@ -4,7 +4,7 @@
 package com.recruitment.backend.entity;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -15,6 +15,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 /*
  *tharinda.jayamal@gmail.com
@@ -33,11 +36,14 @@ public class CV {
 	@JoinColumn(name = "address_id", referencedColumnName = "id")
 	private Address address;
 	@OneToMany(mappedBy = "cv")
-	private List<Skill> skills;
+	@NotFound(action = NotFoundAction.IGNORE)
+	private Set<Skill> skills;
 	@OneToMany(mappedBy = "cv")
-	private List<Qualification> qualifications;
+	@NotFound(action = NotFoundAction.IGNORE)
+	private Set<Qualification> qualifications;
 	@OneToMany(mappedBy = "cv")
-	private List<Experience> experiences;
+	@NotFound(action = NotFoundAction.IGNORE)
+	private Set<Experience> experiences;
 	private Integer noOfGCSEpasses;
 
 	/*
@@ -76,11 +82,11 @@ public class CV {
 		this.creationDate = creationDate;
 	}
 
-	public List<Skill> getSkills() {
+	public Set<Skill> getSkills() {
 		return skills;
 	}
 
-	public void setSkills(List<Skill> skills) {
+	public void setSkills(Set<Skill> skills) {
 		this.skills = skills;
 	}
 
@@ -92,19 +98,19 @@ public class CV {
 		this.address = address;
 	}
 
-	public List<Qualification> getQualifications() {
+	public Set<Qualification> getQualifications() {
 		return qualifications;
 	}
 
-	public void setQualifications(List<Qualification> qualifications) {
+	public void setQualifications(Set<Qualification> qualifications) {
 		this.qualifications = qualifications;
 	}
 
-	public List<Experience> getExperiences() {
+	public Set<Experience> getExperiences() {
 		return experiences;
 	}
 
-	public void setExperiences(List<Experience> experiences) {
+	public void setExperiences(Set<Experience> experiences) {
 		this.experiences = experiences;
 	}
 
