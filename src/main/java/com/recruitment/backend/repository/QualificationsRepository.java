@@ -20,8 +20,15 @@ public interface QualificationsRepository extends
 	void deleteByCv_Id(Long cvId);
 
 	List<Qualification> findAllByCv_Id(Long cvId);
-	
+
 	List<Qualification> findAllByQualificationLevel(Integer level);
-	
-	List<Qualification> findAllByQualificationLevelGreaterThanEqual(Integer level);
+
+	List<Qualification> findAllByQualificationLevelGreaterThanEqual(
+			Integer level);
+
+	List<Qualification> findByQualificationTypeContaining(
+			String qualificationType);
+
+	List<Qualification> findByQualificationNameContaining(
+			String qualificationName);
 }

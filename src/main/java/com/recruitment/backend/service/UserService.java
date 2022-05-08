@@ -57,7 +57,7 @@ public class UserService {
 
 	@Autowired
 	private ExperienceRepository experienceRepository;
-	
+
 	@Autowired
 	private CVRepository cvRepository;
 
@@ -270,7 +270,7 @@ public class UserService {
 
 		return users.stream().collect(Collectors.toList());
 	}
-	
+
 	public List<User> findByMinQualificationLevel(Integer level) {
 
 		List<Qualification> qualifications = qualificationsRepository
@@ -291,10 +291,11 @@ public class UserService {
 
 		return users.stream().collect(Collectors.toList());
 	}
-	
+
 	public List<User> findByMinGCSEPasses(Integer noOfGCSEpasses) {
 
-		List<CV> cvs = cvRepository.findAllByNoOfGCSEpassesGreaterThanEqual(noOfGCSEpasses);
+		List<CV> cvs = cvRepository
+				.findAllByNoOfGCSEpassesGreaterThanEqual(noOfGCSEpasses);
 		Set<User> users = new HashSet<>();
 
 		for (CV c : cvs) {
@@ -303,6 +304,70 @@ public class UserService {
 			if (u != null) {
 				User user = findByUserName(u.getUserName());
 				users.add(user);
+			}
+		}
+
+		return users.stream().collect(Collectors.toList());
+	}
+
+	public List<User> findByAnySkillParam(String skill) {
+
+		List<Skill> skillsByName = skillRepository
+				.findBySkillNameContaining(skill);
+		Set<User> users = new HashSet<>();
+
+		if (skillsByName != null && skillsByName.size() > 0) {
+			for (Skill s : skillsByName) {
+				User u = userRepository.findByCv_Id(s.getCv().getId());
+
+				if (u != null) {
+					User user = findByUserName(u.getUserName());
+					users.add(user);
+				}
+			}
+		} else {
+			List<Skill> skillsByType = skillRepository
+					.findBySkillTypeContaining(skill);
+
+			for (Skill s : skillsByType) {
+				User u = userRepository.findByCv_Id(s.getCv().getId());
+
+				if (u != null) {
+					User user = findByUserName(u.getUserName());
+					users.add(user);
+				}
+			}
+		}
+
+		return users.stream().collect(Collectors.toList());
+	}
+
+	public List<User> findByAnyQualificationParam(String qualification) {
+
+		List<Qualification> qualificationsByName = qualificationsRepository
+				.findByQualificationTypeContaining(qualification);
+		Set<User> users = new HashSet<>();
+
+		if (qualificationsByName != null && qualificationsByName.size() > 0) {
+			for (Qualification q : qualificationsByName) {
+				User u = userRepository.findByCv_Id(q.getCv().getId());
+
+				if (u != null) {
+					User user = findByUserName(u.getUserName());
+					users.add(user);
+				}
+			}
+		} else {
+			List<Qualification> qualificationsByType = qualificationsRepository
+					.findByQualificationNameContaining(qualification);
+
+			for (Qualification q : qualificationsByType) {
+				User u = userRepository.findByCv_Id(q.getCv().getId());
+
+				if (u != null) {
+					User user = findByUserName(u.getUserName());
+					users.add(user);
+				}
 			}
 		}
 

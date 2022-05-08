@@ -19,4 +19,8 @@ public interface SkillRepository extends PagingAndSortingRepository<Skill, Long>
 	void deleteByCv_Id(Long cvId);
 	
 	List<Skill> findAllByCv_Id(Long cvId);
+	
+	List<Skill> findBySkillNameContaining(String skillName);
+	
+	List<Skill> findBySkillTypeContaining(String skillType);
 }

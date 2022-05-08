@@ -217,5 +217,21 @@ public class UserController {
 		log.info("Get: /user/getbymingcsepasses");
 		return userService.findByMinGCSEPasses(noOfGCSEpasses);
 	}
+	
+	@GetMapping("/getbyanyskillparameter")
+	public List<User> getUserByAnySkillParam(HttpServletRequest request,
+			@RequestParam(value = "skill") String skill) {
+
+		log.info("Get: /user/getbymingcsepasses");
+		return userService.findByAnySkillParam(skill);
+	}
+	
+	@GetMapping("/getbyanyqualificationparameter")
+	public List<User> getUserByAnyQualificationParam(HttpServletRequest request,
+			@RequestParam(value = "qualification") String qualification) {
+
+		log.info("Get: /user/getbyanyqualificationparameter");
+		return userService.findByAnyQualificationParam(qualification);
+	}
 
 }
