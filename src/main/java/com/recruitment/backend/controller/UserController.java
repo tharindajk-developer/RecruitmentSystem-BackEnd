@@ -201,5 +201,21 @@ public class UserController {
 		log.info("Get: /user/getbyqualificationlevel");
 		return userService.findByQualificationLevel(level);
 	}
+	
+	@GetMapping("/getbyminqualificationlevel/{level}")
+	public List<User> getUserByMinQualificationLevel(HttpServletRequest request,
+			@PathVariable(value = "level") Integer level) {
+
+		log.info("Get: /user/getbyminqualificationlevel");
+		return userService.findByMinQualificationLevel(level);
+	}
+	
+	@GetMapping("/getbymingcsepasses/{noOfGCSEpasses}")
+	public List<User> getUserByMinGCSEPasses(HttpServletRequest request,
+			@PathVariable(value = "noOfGCSEpasses") Integer noOfGCSEpasses) {
+
+		log.info("Get: /user/getbymingcsepasses");
+		return userService.findByMinGCSEPasses(noOfGCSEpasses);
+	}
 
 }

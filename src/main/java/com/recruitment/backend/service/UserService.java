@@ -25,6 +25,7 @@ import com.recruitment.backend.entity.Qualification;
 import com.recruitment.backend.entity.Skill;
 import com.recruitment.backend.entity.User;
 import com.recruitment.backend.model.ChangePassword;
+import com.recruitment.backend.repository.CVRepository;
 import com.recruitment.backend.repository.ExperienceRepository;
 import com.recruitment.backend.repository.QualificationsRepository;
 import com.recruitment.backend.repository.SkillRepository;
@@ -56,6 +57,9 @@ public class UserService {
 
 	@Autowired
 	private ExperienceRepository experienceRepository;
+	
+	@Autowired
+	private CVRepository cvRepository;
 
 	public User addUpdateUser(User user) {
 
@@ -257,6 +261,44 @@ public class UserService {
 			cvIds.add(q.getCv().getId());
 
 			User u = userRepository.findByCv_Id(q.getCv().getId());
+
+			if (u != null) {
+				User user = findByUserName(u.getUserName());
+				users.add(user);
+			}
+		}
+
+		return users.stream().collect(Collectors.toList());
+	}
+	
+	public List<User> findByMinQualificationLevel(Integer level) {
+
+		List<Qualification> qualifications = qualificationsRepository
+				.findAllByQualificationLevelGreaterThanEqual(level);
+		Set<Long> cvIds = new HashSet<>();
+		Set<User> users = new HashSet<>();
+
+		for (Qualification q : qualifications) {
+			cvIds.add(q.getCv().getId());
+
+			User u = userRepository.findByCv_Id(q.getCv().getId());
+
+			if (u != null) {
+				User user = findByUserName(u.getUserName());
+				users.add(user);
+			}
+		}
+
+		return users.stream().collect(Collectors.toList());
+	}
+	
+	public List<User> findByMinGCSEPasses(Integer noOfGCSEpasses) {
+
+		List<CV> cvs = cvRepository.findAllByNoOfGCSEpassesGreaterThanEqual(noOfGCSEpasses);
+		Set<User> users = new HashSet<>();
+
+		for (CV c : cvs) {
+			User u = userRepository.findByCv_Id(c.getId());
 
 			if (u != null) {
 				User user = findByUserName(u.getUserName());

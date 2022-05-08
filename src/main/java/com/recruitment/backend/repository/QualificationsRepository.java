@@ -22,4 +22,6 @@ public interface QualificationsRepository extends
 	List<Qualification> findAllByCv_Id(Long cvId);
 	
 	List<Qualification> findAllByQualificationLevel(Integer level);
+	
+	List<Qualification> findAllByQualificationLevelGreaterThanEqual(Integer level);
 }
