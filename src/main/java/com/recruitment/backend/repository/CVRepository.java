@@ -19,4 +19,6 @@ public interface CVRepository extends PagingAndSortingRepository<CV, Long> {
 	CV findTopByOrderByIdDesc();
 	
 	List<CV> findAllByNoOfGCSEpassesGreaterThanEqual(Integer noOfGCSEpasses);
+	
+	List<CV> findAllByJobSector(String jobSector);
 }

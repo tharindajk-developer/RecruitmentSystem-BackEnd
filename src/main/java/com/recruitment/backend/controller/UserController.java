@@ -193,7 +193,7 @@ public class UserController {
 		log.info("Get: /user/search/username");
 		return userService.findByUserName(requestModel.getName());
 	}
-	
+
 	@GetMapping("/getbyqualificationlevel/{level}")
 	public List<User> getUserByQualificationLevel(HttpServletRequest request,
 			@PathVariable(value = "level") Integer level) {
@@ -201,15 +201,16 @@ public class UserController {
 		log.info("Get: /user/getbyqualificationlevel");
 		return userService.findByQualificationLevel(level);
 	}
-	
+
 	@GetMapping("/getbyminqualificationlevel/{level}")
-	public List<User> getUserByMinQualificationLevel(HttpServletRequest request,
+	public List<User> getUserByMinQualificationLevel(
+			HttpServletRequest request,
 			@PathVariable(value = "level") Integer level) {
 
 		log.info("Get: /user/getbyminqualificationlevel");
 		return userService.findByMinQualificationLevel(level);
 	}
-	
+
 	@GetMapping("/getbymingcsepasses/{noOfGCSEpasses}")
 	public List<User> getUserByMinGCSEPasses(HttpServletRequest request,
 			@PathVariable(value = "noOfGCSEpasses") Integer noOfGCSEpasses) {
@@ -217,7 +218,7 @@ public class UserController {
 		log.info("Get: /user/getbymingcsepasses");
 		return userService.findByMinGCSEPasses(noOfGCSEpasses);
 	}
-	
+
 	@GetMapping("/getbyanyskillparameter")
 	public List<User> getUserByAnySkillParam(HttpServletRequest request,
 			@RequestParam(value = "skill") String skill) {
@@ -225,13 +226,40 @@ public class UserController {
 		log.info("Get: /user/getbymingcsepasses");
 		return userService.findByAnySkillParam(skill);
 	}
-	
+
 	@GetMapping("/getbyanyqualificationparameter")
-	public List<User> getUserByAnyQualificationParam(HttpServletRequest request,
+	public List<User> getUserByAnyQualificationParam(
+			HttpServletRequest request,
 			@RequestParam(value = "qualification") String qualification) {
 
 		log.info("Get: /user/getbyanyqualificationparameter");
 		return userService.findByAnyQualificationParam(qualification);
+	}
+
+	@GetMapping("/getbyanyexperienceparameter")
+	public List<User> getUserByAnyExperienceParam(HttpServletRequest request,
+			@RequestParam(value = "experience") String experience) {
+
+		log.info("Get: /user/getbyanyexperienceparameter");
+		return userService.findByAnyExperienceParam(experience);
+	}
+
+	@PostMapping("/getbyjobsector")
+	public List<User> getUserByMinGCSEPasses(HttpServletRequest request,
+			@RequestParam(value = "jobsector") String jobSector) {
+
+		log.info("Get: /user/getbyjobsector");
+		return userService.findByJobSector(jobSector);
+	}
+
+	@GetMapping("/getbyanyqualificationtypeandparameter")
+	public List<User> getUserByAnyQualificationTypeAndParam(
+			HttpServletRequest request,
+			@RequestParam(value = "qualificationType") String qualificationType,
+			@RequestParam(value = "searchParam") String searchParam) {
+
+		log.info("Get: /user/getbyanyqualificationtypeandparameter");
+		return userService.getUserByAnyQualificationTypeAndParam(qualificationType, searchParam);
 	}
 
 }

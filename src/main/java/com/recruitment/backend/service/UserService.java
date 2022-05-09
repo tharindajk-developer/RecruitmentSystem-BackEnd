@@ -373,4 +373,100 @@ public class UserService {
 
 		return users.stream().collect(Collectors.toList());
 	}
+	
+	public List<User> findByAnyExperienceParam(String experience) {
+
+		List<Experience> experienceByCompanyName = experienceRepository
+				.findByCompanyNameContaining(experience);
+		List<Experience> experienceByRole = experienceRepository
+				.findByRoleContaining(experience);
+		List<Experience> experienceByExperienceType = experienceRepository
+				.findByExperienceTypeContaining(experience);
+		Set<User> users = new HashSet<>();
+
+		if (experienceByCompanyName != null && experienceByCompanyName.size() > 0) {
+			for (Experience e : experienceByCompanyName) {
+				User u = userRepository.findByCv_Id(e.getCv().getId());
+
+				if (u != null) {
+					User user = findByUserName(u.getUserName());
+					users.add(user);
+				}
+			}
+		} 
+		
+		if (experienceByRole != null && experienceByRole.size() > 0) {
+			for (Experience e : experienceByRole) {
+				User u = userRepository.findByCv_Id(e.getCv().getId());
+
+				if (u != null) {
+					User user = findByUserName(u.getUserName());
+					users.add(user);
+				}
+			}
+		} 
+		
+		if (experienceByExperienceType != null && experienceByExperienceType.size() > 0) {
+			for (Experience e : experienceByExperienceType) {
+				User u = userRepository.findByCv_Id(e.getCv().getId());
+
+				if (u != null) {
+					User user = findByUserName(u.getUserName());
+					users.add(user);
+				}
+			}
+		} 
+
+		return users.stream().collect(Collectors.toList());
+	}
+	
+	public List<User> findByJobSector(String jobSector) {
+
+		List<CV> cvs = cvRepository
+				.findAllByJobSector(jobSector);
+		Set<User> users = new HashSet<>();
+
+		for (CV c : cvs) {
+			User u = userRepository.findByCv_Id(c.getId());
+
+			if (u != null) {
+				User user = findByUserName(u.getUserName());
+				users.add(user);
+			}
+		}
+
+		return users.stream().collect(Collectors.toList());
+	}
+	
+	public List<User> getUserByAnyQualificationTypeAndParam(String qualificationType, String searchParam) {
+
+		List<Qualification> qualificationsByName = qualificationsRepository
+				.findByQualificationTypeAndQualificationNameContaining(qualificationType, searchParam);
+		Set<User> users = new HashSet<>();
+
+		if (qualificationsByName != null && qualificationsByName.size() > 0) {
+			for (Qualification q : qualificationsByName) {
+				User u = userRepository.findByCv_Id(q.getCv().getId());
+
+				if (u != null) {
+					User user = findByUserName(u.getUserName());
+					users.add(user);
+				}
+			}
+		} else if(org.apache.commons.lang3.StringUtils.isNumeric(searchParam)){
+			List<Qualification> qualificationsByType = qualificationsRepository
+					.findByQualificationTypeAndQualificationLevel(qualificationType, Integer.valueOf(searchParam));
+
+			for (Qualification q : qualificationsByType) {
+				User u = userRepository.findByCv_Id(q.getCv().getId());
+
+				if (u != null) {
+					User user = findByUserName(u.getUserName());
+					users.add(user);
+				}
+			}
+		}
+
+		return users.stream().collect(Collectors.toList());
+	}
 }

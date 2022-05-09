@@ -20,4 +20,13 @@ public interface ExperienceRepository extends
 	void deleteByCv_Id(Long cvId);
 
 	List<Experience> findAllByCv_Id(Long cvId);
+	
+	List<Experience> findByCompanyNameContaining(
+			String companyName);
+	
+	List<Experience> findByRoleContaining(
+			String companyName);
+	
+	List<Experience> findByExperienceTypeContaining(
+			String companyName);
 }

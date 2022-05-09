@@ -31,4 +31,10 @@ public interface QualificationsRepository extends
 
 	List<Qualification> findByQualificationNameContaining(
 			String qualificationName);
+
+	List<Qualification> findByQualificationTypeAndQualificationNameContaining(
+			String qualificationType, String qualificationName);
+	
+	List<Qualification> findByQualificationTypeAndQualificationLevel(
+			String qualificationType, Integer qualificationLevel);
 }
