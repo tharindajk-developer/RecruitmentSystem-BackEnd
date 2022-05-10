@@ -223,7 +223,7 @@ public class UserController {
 	public List<User> getUserByAnySkillParam(HttpServletRequest request,
 			@RequestParam(value = "skill") String skill) {
 
-		log.info("Get: /user/getbymingcsepasses");
+		log.info("Get: /user/getbyanyskillparameter");
 		return userService.findByAnySkillParam(skill);
 	}
 
@@ -245,7 +245,7 @@ public class UserController {
 	}
 
 	@PostMapping("/getbyjobsector")
-	public List<User> getUserByMinGCSEPasses(HttpServletRequest request,
+	public List<User> getUserByJobSector(HttpServletRequest request,
 			@RequestParam(value = "jobsector") String jobSector) {
 
 		log.info("Get: /user/getbyjobsector");

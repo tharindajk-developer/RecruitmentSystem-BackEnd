@@ -104,32 +104,4 @@ public class CVController {
 		log.info("Get: /cv/getbyuserid");
 		return cvService.getCVByUserId(userId);
 	}
-
-	@GetMapping("/generateCV/{userId}")
-	public ResponseEntity<byte[]> downloadPDFCV(
-			@PathVariable(value = "userId") Long userId) throws Exception {
-
-		try {
-			log.info("Creating CV");
-
-			String outputhFilePath = null;
-			String pattern = "ddMMyyyy_HHmmSS";
-			SimpleDateFormat format = new SimpleDateFormat(pattern);
-			outputhFilePath = transactionPath + userId
-					+ format.format(new Date()) + ".pdf";
-			byte[] outArray = cvService.generatedPDF(userId, outputhFilePath);
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_PDF);
-			headers.setContentDispositionFormData(outputhFilePath,
-					outputhFilePath);
-			headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-			ResponseEntity<byte[]> response = new ResponseEntity<>(outArray,
-					headers, HttpStatus.OK);
-			return response;
-		} catch (Exception e) {
-			log.error("Error occured when creating CV ", e);
-		}
-		return null;
-	}
 }

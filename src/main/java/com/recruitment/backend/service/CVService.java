@@ -4,15 +4,6 @@
 
 package com.recruitment.backend.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,11 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
 import com.recruitment.backend.entity.CV;
 import com.recruitment.backend.entity.Experience;
 import com.recruitment.backend.entity.Qualification;
@@ -55,16 +41,16 @@ public class CVService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private ExperienceRepository experienceRepository;
-	
+
 	@Autowired
 	private SkillRepository skillRepository;
-	
+
 	@Autowired
 	private QualificationsRepository qualificationsRepository;
-	
+
 	@Autowired
 	private UserService userService;
 
@@ -76,37 +62,38 @@ public class CVService {
 			user = userRepository.findById(userId).get();
 		}
 
-		if (user != null && user.getRole() != null
-				&& user.getRole().getName().equalsIgnoreCase(RolesEnum.JOBSEEKER.toString())) {
+		if (user != null
+				&& user.getRole() != null
+				&& user.getRole().getName()
+						.equalsIgnoreCase(RolesEnum.JOBSEEKER.toString())) {
 			user.setCv(cv);
-			
+
 			cvRepository.save(cv);
-			
-			Set<Experience> experiences = new HashSet<>();			
-			for(Experience e : cv.getExperiences()){
+
+			Set<Experience> experiences = new HashSet<>();
+			for (Experience e : cv.getExperiences()) {
 				e.setCv(cv);
 				experiences.add(e);
-			}		
+			}
 			experienceRepository.saveAll(experiences);
-			//cv.setExperiences(experiences);
-			
-			Set<Skill> skills = new HashSet<>();			
-			for(Skill s : cv.getSkills()){
+			// cv.setExperiences(experiences);
+
+			Set<Skill> skills = new HashSet<>();
+			for (Skill s : cv.getSkills()) {
 				s.setCv(cv);
 				skills.add(s);
 			}
 			skillRepository.saveAll(skills);
-			//cv.setSkills(skills);
-			
-			Set<Qualification> qualifications = new HashSet<>();			
-			for(Qualification q : cv.getQualifications()){
+			// cv.setSkills(skills);
+
+			Set<Qualification> qualifications = new HashSet<>();
+			for (Qualification q : cv.getQualifications()) {
 				q.setCv(cv);
 				qualifications.add(q);
-			}			
-			//cv.setQualifications(qualifications);
+			}
+			// cv.setQualifications(qualifications);
 			qualificationsRepository.saveAll(qualifications);
-			
-	
+
 			status = "Successfully stored the CV ";
 		}
 		return status;
@@ -117,7 +104,7 @@ public class CVService {
 
 		log.debug("Fetching CV for user:" + userId);
 		if (userRepository.findById(userId).isPresent()) {
-			
+
 			User u = userRepository.findById(userId).get();
 			return userService.findByUserName(u.getUserName()).getCv();
 		} else {
@@ -138,97 +125,6 @@ public class CVService {
 				userRepository.save(user);
 			}
 		}
-	}
-
-	public byte[] generatedPDF(Long userId, String outputhFilePath)
-			throws DocumentException, IOException {
-
-		User user = userRepository.findById(userId).get();
-
-		if (user.getRole() != null
-				&& user.getRole().getName().equalsIgnoreCase(RolesEnum.JOBSEEKER.toString())) {
-			log.info("Preparing CV report for " + userId);
-		}
-		OutputStream fos = new FileOutputStream(new File(outputhFilePath));
-
-		PdfReader pdfReader = new PdfReader(cvTemplate);
-		PdfStamper pdfStamper = new PdfStamper(pdfReader, fos);
-
-		if (user.getRole() != null
-				&& user.getRole().getName().equalsIgnoreCase(RolesEnum.JOBSEEKER.toString())) {
-			for (int i = 1; i <= pdfReader.getNumberOfPages(); i++) {
-				if (i == 1) {
-					PdfContentByte pdfContentByte = pdfStamper
-							.getOverContent(i);
-
-					pdfContentByte.beginText();
-					pdfContentByte.setFontAndSize(BaseFont.createFont(
-							BaseFont.COURIER, BaseFont.CP1257,
-							BaseFont.EMBEDDED), 10);
-
-					pdfContentByte.setTextMatrix(102, 622);
-					pdfContentByte.showText(user.getFirstName() + " "
-							+ user.getLastName());
-
-					pdfContentByte.setTextMatrix(102, 601);
-					pdfContentByte.showText(new SimpleDateFormat(
-							"dd-MM-yyyy HH:mm").format(new Date()));
-
-					pdfContentByte.setTextMatrix(102, 580);
-					pdfContentByte.showText(user.getRole().getName());
-
-					int x = 102;
-					int y = 557;
-
-					/*
-					 * if (user.getCorporateCustomer().getAccount()
-					 * .getTransactions() != null) {
-					 * 
-					 * pdfContentByte.setTextMatrix(x, y);
-					 * pdfContentByte.setTextMatrix(x, y);
-					 * pdfContentByte.showText("Reference" + "     " + "Amount"
-					 * + "   " + "From" + "            " + "To" +
-					 * "             " + "Date" + "               " + "Type"); y
-					 * -= 13;
-					 * 
-					 * for (Transaction transaction : user
-					 * .getCorporateCustomer().getAccount() .getTransactions())
-					 * { if (StringUtils.isEmpty(transaction.getFromAcc())) {
-					 * transaction.setFromAcc("----Bank----"); } if
-					 * (StringUtils.isEmpty(transaction.getToAcc())) {
-					 * transaction.setToAcc("----Bank----"); }
-					 * pdfContentByte.setTextMatrix(x, y);
-					 * pdfContentByte.showText(transaction .getTransactionRef()
-					 * + "   " + transaction.getTransactionAmount() .setScale(2,
-					 * RoundingMode.CEILING) + "   " + transaction.getFromAcc()
-					 * + "   " + transaction.getToAcc() + "   " + new
-					 * SimpleDateFormat("dd-MM-yyyy HH:mm") .format(transaction
-					 * .getTransactionDate()) + "   " +
-					 * transaction.getTransactionType()); y -= 13; } }
-					 */
-
-					pdfContentByte.endText();
-				}
-
-			}
-		}
-
-		pdfStamper.close();
-		pdfReader.close();
-
-		return readFile(outputhFilePath);
-	}
-
-	private byte[] readFile(String path) throws IOException {
-		InputStream is = new FileInputStream(path);
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		int nRead;
-		byte[] data = new byte[1024];
-		while ((nRead = is.read(data, 0, data.length)) != -1) {
-			buffer.write(data, 0, nRead);
-		}
-		buffer.flush();
-		return buffer.toByteArray();
 	}
 
 }
